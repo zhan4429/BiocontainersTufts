@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+if [ ! $(command -v singularity) ]; then
+        module load singularity
+fi
+
+VER=3.1.1.6
+PKG=geomx_ngs_pipeline
+PROGRAM=GeoMxNGSPipeline_API
+DIRECTORY=/cluster/tufts/biocontainers/images
+IMAGE=geomx_ngs_pipeline_3.1.sif
+ENTRYPOINT_ARGS=""
+
+## Determine Nvidia GPUs (to pass coresponding flag to Singularity)
+if [[ $(nvidia-smi -L 2>/dev/null) ]]
+then
+        OPTIONS="--nv"
+fi
+	
+singularity exec $OPTIONS $DIRECTORY/$IMAGE $ENTRYPOINT_ARGS $PROGRAM "$@"

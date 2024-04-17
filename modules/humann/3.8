@@ -1,0 +1,75 @@
+#%Module -*- tcl -*-
+# The MIT License (MIT)
+# Copyright (c) 2023 Tufts University
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to
+# deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+# IN THE SOFTWARE.
+
+module-whatis   "Description: Humann is a pipeline for efficiently and accurately profiling the presence/absence and abundance of microbial pathways in a community from metagenomic or metatranscriptomic sequencing data (typically millions of short DNA/RNA reads)."
+module-whatis   "Home page:     https://github.com/biobakery/humann"
+module-whatis "Commands: humann,humann3,humann3_databases,humann_associate,humann_barplot,humann_benchmark,humann_build_custom_database,humann_config,humann_databases,humann_genefamilies_genus_level,humann_humann1_kegg,humann_infer_taxonomy,humann_join_tables,humann_reduce_table,humann_regroup_table,humann_rename_table,humann_renorm_table,humann_rna_dna_norm,humann_split_stratified_table,humann_split_table,humann_strain_profiler,humann_test,humann_unpack_pathways"
+module-whatis   "Docker hub: https://hub.docker.com/r/biobakery/humann"
+
+set pkg humann 
+set ver 3.8
+
+proc ModulesHelp { } {
+  puts stderr "\tThis module adds humann v3.8 to the environment.  It runs as a container under singularity"
+}
+
+#
+# prepend-path and set SINGULARITY_BIND
+#
+prepend-path PATH            /cluster/tufts/biocontainers/tools/humann/3.8/bin
+prepend-path --delim=, SINGULARITY_BIND /cluster/tufts
+prepend-path --delim=, SINGULARITY_BIND  /cluster/tufts/biocontainers/datasets/humann/metaphlan:/usr/local/lib/python3.8/dist-packages/metaphlan/metaphlan_databases
+#
+# set environment variable
+#
+
+
+#
+# list conflict modules that cannot be loaded together
+#
+set conflicts_modules {humann}
+foreach a_conflict $conflicts_modules {
+  conflict $a_conflict
+}
+
+#
+# appended log section
+# 
+
+if {[module-info mode "load"]} {
+  global env
+  if {[info exists env(USER)]} {
+    set the_user [lindex [array get env USER] 1]
+  } else {
+    set the_user "foo"
+  }
+  system [concat "logger environment-modules" [module-info name] $the_user ]
+}
+
+set additional_prereqs {"singularity"}
+if {[module-info mode "load"]} {
+  foreach a_module $additional_prereqs {
+    if {![is-loaded $a_module]} {
+      module load $a_module
+    }
+  }
+}

@@ -1,0 +1,72 @@
+#%Module -*- tcl -*-
+# The MIT License (MIT)
+# Copyright (c) 2023 Tufts University
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to
+# deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+# IN THE SOFTWARE.
+
+module-whatis   "Description: Mirge3 is an update to Python package to perform comprehensive analysis of small RNA sequencing data, including miRNA annotation, A-to-I editing, novel miRNA detection, isomiR analysis, visualization through IGV, processing Unique Molecular Identifieres (UMI), tRF detection and producing interactive graphical output."
+module-whatis   "Home page:     https://github.com/mhalushka/miRge3.0"
+module-whatis   "BioContainers: https://biocontainers.pro/tools/mirge3"
+module-whatis "Commands: miRge3.0"
+
+set pkg Mirge3 
+set ver 0.1.4
+
+proc ModulesHelp { } {
+  puts stderr "\tThis module adds Mirge3 v0.1.4 to the environment.  It runs as a container under singularity"
+}
+
+#
+# prepend-path and set SINGULARITY_BIND
+#
+prepend-path PATH            /cluster/tufts/biocontainers/tools/mirge3/0.1.4/bin
+prepend-path --delim=, SINGULARITY_BIND /cluster/tufts
+
+#
+
+#
+# list conflict modules that cannot be loaded together
+#
+set conflicts_modules {mirge3}
+foreach a_conflict $conflicts_modules {
+  conflict $a_conflict
+}
+
+#
+# appended log section
+# 
+
+if {[module-info mode "load"]} {
+  global env
+  if {[info exists env(USER)]} {
+    set the_user [lindex [array get env USER] 1]
+  } else {
+    set the_user "foo"
+  }
+  system [concat "logger environment-modules" [module-info name]  ]
+}
+
+set additional_prereqs {"singularity/3.8.4" "squashfs/4.4"}
+if {[module-info mode "load"]} {
+  foreach a_module $additional_prereqs {
+    if {![is-loaded $a_module]} {
+      module load $a_module
+    }
+  }
+}

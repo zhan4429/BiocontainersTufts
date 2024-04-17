@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+if [ ! $(command -v singularity) ]; then
+        module load singularity
+fi
+
+VER=2.15.0
+PKG=blast
+PROGRAM=legacy_blast.pl
+DIRECTORY=/cluster/tufts/biocontainers/images
+IMAGE=blast_2.15.0.sif
+ENTRYPOINT_ARGS=""
+
+## Determine Nvidia GPUs (to pass coresponding flag to Singularity)
+if [[ $(nvidia-smi -L 2>/dev/null) ]]
+then
+        OPTIONS="--nv"
+fi
+	
+singularity exec $OPTIONS $DIRECTORY/$IMAGE $ENTRYPOINT_ARGS $PROGRAM "$@"

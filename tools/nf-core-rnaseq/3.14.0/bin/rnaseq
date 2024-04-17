@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+if [ ! $(command -v singularity) ]; then
+        module load singularity
+fi
+
+VER=3.14.0
+PKG=nf-core-rnaseq
+
+export NXF_SINGULARITY_CACHEDIR=/cluster/tufts/biocontainers/nf-core/singularity-images
+nextflow run /cluster/tufts/biocontainers/nf-core/pipelines/nf-core-rnaseq/3.14.0/3_14_0 "$@"

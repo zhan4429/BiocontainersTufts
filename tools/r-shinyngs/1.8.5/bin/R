@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+if [ ! $(command -v singularity) ]; then
+        module load singularity
+fi
+
+VER=1.8.5
+PKG=r-shinyngs
+PROGRAM=R
+DIRECTORY=/cluster/tufts/biocontainers/images
+IMAGE=shinyngs_1.8.5.sif
+ENTRYPOINT_ARGS=""
+
+## Determine Nvidia GPUs (to pass coresponding flag to Singularity)
+if [[ $(nvidia-smi -L 2>/dev/null) ]]
+then
+        OPTIONS="--nv"
+fi
+	
+singularity exec $OPTIONS $DIRECTORY/$IMAGE $ENTRYPOINT_ARGS $PROGRAM "$@"

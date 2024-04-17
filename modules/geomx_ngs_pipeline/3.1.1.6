@@ -1,0 +1,75 @@
+#%Module -*- tcl -*-
+# The MIT License (MIT)
+# Copyright (c) 2023 Tufts University
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to
+# deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+# IN THE SOFTWARE.
+
+module-whatis   "Description: The GeoMx NGS Pipeline, developed by NanoString, is an essential part of the GeoMx NGS workflow."
+module-whatis   "Home page:   https://nanostring.com"
+module-whatis "Commands: geomxngspipeline,GeoMxNGSPipeline_API"
+
+set pkg geomx_ngs_pipeline 
+set ver 3.1.1.6
+
+proc ModulesHelp { } {
+  puts stderr "\tThis module adds geomx_ngs_pipeline v3.1 to the environment.  It runs as a container under singularity"
+}
+
+#
+# prepend-path and set SINGULARITY_BIND
+#
+prepend-path PATH            /cluster/tufts/biocontainers/tools/geomx_ngs_pipeline/3.1.1.6/bin
+prepend-path --delim=, SINGULARITY_BIND /cluster/tufts
+prepend-path --delim=, SINGULARITY_BIND  /cluster/tufts/biocontainers/datasets/GeoMxNGSPipeline:/var/GeoMxNGSPipeline
+
+#
+# set environment variable
+#
+
+
+#
+# list conflict modules that cannot be loaded together
+#
+set conflicts_modules {geomx_ngs_pipeline}
+foreach a_conflict $conflicts_modules {
+  conflict $a_conflict
+}
+
+#
+# appended log section
+# 
+
+if {[module-info mode "load"]} {
+  global env
+  if {[info exists env(USER)]} {
+    set the_user [lindex [array get env USER] 1]
+  } else {
+    set the_user "foo"
+  }
+  system [concat "logger environment-modules" [module-info name] $the_user ]
+}
+
+set additional_prereqs {"singularity"}
+if {[module-info mode "load"]} {
+  foreach a_module $additional_prereqs {
+    if {![is-loaded $a_module]} {
+      module load $a_module
+    }
+  }
+}
