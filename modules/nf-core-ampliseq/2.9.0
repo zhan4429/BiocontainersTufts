@@ -1,0 +1,70 @@
+#%Module -*- tcl -*-
+# The MIT License (MIT)
+# Copyright (c) 2024 Tufts University
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to
+# deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+# IN THE SOFTWARE.
+
+module-whatis   nf-core ampliseq pipeline
+module-whatis   https://nf-co.re/ampliseq
+set pkg nf-core-ampliseq 
+set ver 2.9.0
+setenv NXF_SINGULARITY_CACHEDIR /cluster/tufts/biocontainers/nf-core/singularity-images
+
+proc ModulesHelp { } {
+  puts stderr "\tThis module adds nf-core-ampliseq v2.9.0 to the environment. "
+}
+
+
+#
+# prepend-path 
+#
+prepend-path PATH            /cluster/tufts/biocontainers/tools/nf-core-ampliseq/2.9.0/bin
+
+
+#
+# list conflict modules that cannot be loaded together
+#
+set conflicts_modules {}
+foreach a_conflict $conflicts_modules {
+  conflict nf-core-ampliseq
+}
+
+#
+# appended log section
+# 
+
+if {[module-info mode "load"]} {
+  global env
+  if {[info exists env(USER)]} {
+    set the_user [lindex [array get env USER] 1]
+  } else {
+    set the_user "foo"
+  }
+  system [concat "logger environment-modules" [module-info name] $the_user ]
+}
+
+set additional_prereqs {"nf-core"}
+if {[module-info mode "load"]} {
+  foreach a_module $additional_prereqs {
+    if {![is-loaded $a_module]} {
+      module load $a_module
+    }
+  }
+}
+
